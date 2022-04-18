@@ -1,2 +1,2 @@
-# goban-id
-Convert board state to an id.  Assigns lower ids to boards with fewer stones.
+# BadukID
+Convert board state to a unique id.  Lower ids are assigned to boards with fewer stones.
