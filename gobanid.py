@@ -1,4 +1,6 @@
-_N = 10
+from bisect import bisect
+
+_N = 361
 
 _factorials = [1]
 for i in range(1, 362):
@@ -7,7 +9,7 @@ for i in range(1, 362):
 
 def factorial(n):
     if n >= len(_factorials):
-        raise ValueError("Requested a factorial outside pre-computed range")
+        raise ValueError(f"Requested a factorial outside pre-computed range: {n}!")
     return _factorials[n]
 
 # binomial coefficient
@@ -37,7 +39,7 @@ def sum_combos(k, n_start, n_end):
 #        2             [0, 1, 4]
 #        .                ...
 #   C(361, 3) - 1   [359, 360, 361]
-def combo_id(intersections, curr_idx=0):
+def combo_id(intersections):
     if len(intersections) == 0:
         return 1
     if len(intersections) == 1:
@@ -48,6 +50,24 @@ def combo_id(intersections, curr_idx=0):
         n_start = _N - intersections[i]
         n_end = _N - intersections[i - 1] - 1
         ret += sum_combos(k - 1, n_start, n_end)
+    return ret
+
+def decode_cid(num_stones, id):
+    if num_stones == 0:
+        return []
+    pos = 0
+    while sum_combos(num_stones - 1, _N - pos - 1, _N) <= id:
+        pos += 1
+    id -= sum_combos(num_stones - 1, _N - pos, _N)
+    ret = [pos]
+    
+    for i in range(1, num_stones):
+        pos = ret[-1] + 1
+        combo_sum = 0
+        while sum_combos(num_stones - i - 1, _N - pos - 1, _N - ret[-1] - 1) <= id:
+            pos += 1
+        id -= sum_combos(num_stones - i - 1, _N - pos, _N - ret[-1] - 1)
+        ret.append(pos)
     return ret
 
 # convert a list of ones and zeros to a number
@@ -66,7 +86,33 @@ def encode(board):
     num_stones = sum(1 for x in board if x != 0)
     if num_stones == 0:
         return 0
-    print("Number of stones: ", num_stones)
     c_id = combo_id([idx for idx, val in enumerate(board) if val != 0])
     bw_id = bin_to_int([val - 1 for val in board if val != 0])
-    return _num_boards_lte[num_stones - 1] + C(num_stones, _N) * bw_id + c_id
+    return _num_boards_lte[num_stones - 1] + c_id * 2**num_stones + bw_id
+
+def decode(id):
+    num_stones = bisect(_num_boards_lte, id)
+    if num_stones == 0:
+        return [0] * _N
+    id -= _num_boards_lte[num_stones - 1]
+    bw_id = id % 2**num_stones
+    c_id = id // 2**num_stones
+    intersections = decode_cid(num_stones, c_id)
+    ret = [0] * _N
+    for i in range(num_stones):
+        if (1 << (num_stones - i - 1)) & bw_id:
+            ret[intersections[i]] = 2
+        else:
+            ret[intersections[i]] = 1
+    return ret
+
+# FOR TESTING
+flying_knife = (
+    [0] * 19
+    + [0] * 12 + [1, 2, 0, 0, 0, 0, 0]
+    + [0] * 12 + [0, 1, 2, 2, 2, 0, 0]
+    + [0] * 12 + [0, 1, 2, 1, 1, 0, 0]
+    + [0] * 12 + [0, 0, 1, 2, 0, 0, 0]
+    + [0] * 19 * 14)
+
+print(decode(encode(flying_knife)))
