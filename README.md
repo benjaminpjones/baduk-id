@@ -1,5 +1,5 @@
 # BadukID
-Convert board state to a unique id.  Lower ids are assigned to boards with fewer stones.
+Convert board state to a unique id.  This ID is an integer in the range \[0, 3^361).  Lower ids are assigned to boards with fewer stones.
 
 ## Installation
 
