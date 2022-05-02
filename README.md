@@ -1,7 +1,13 @@
 # BadukID
 Convert board state to a unique id.  Lower ids are assigned to boards with fewer stones.
 
-Usage:
+## Installation
+
+```
+python3 -m pip install baduk-id
+```
+
+## Usage
 
 ```
 from baduk_id.baduk_id import encode, decode
@@ -17,6 +23,6 @@ FLYING_KNIFE = (
     + [0] * 19 * 14)
 
 flying_knife_id = encode(FLYING_KNIFE)
-# The value of flying_knife_board will be equivalent to FLYING_KNIVE
-flying_knife_board = decode(flying_knife_id)
+# The value of board_state will be equivalent to FLYING_KNIVE
+board_state = decode(flying_knife_id)
 ```
