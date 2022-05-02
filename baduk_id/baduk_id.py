@@ -52,22 +52,25 @@ def combo_id(intersections):
         ret += sum_combos(k - 1, n_start, n_end)
     return ret
 
+def find_pos(prev_pos, num_stones, id):
+    pos = prev_pos + 1
+    while sum_combos(num_stones - 1, _N - pos - 1, _N - prev_pos - 1) <= id:
+        pos += 1
+    new_id = id - sum_combos(num_stones - 1, _N - pos, _N - prev_pos - 1)
+    return pos, new_id
+
 def decode_cid(num_stones, id):
     if num_stones == 0:
         return []
-    pos = 0
-    while sum_combos(num_stones - 1, _N - pos - 1, _N) <= id:
-        pos += 1
-    id -= sum_combos(num_stones - 1, _N - pos, _N)
+    pos, id = find_pos(-1, num_stones, id)
     ret = [pos]
+
+    num_stones -= 1
     
-    for i in range(1, num_stones):
-        pos = ret[-1] + 1
-        combo_sum = 0
-        while sum_combos(num_stones - i - 1, _N - pos - 1, _N - ret[-1] - 1) <= id:
-            pos += 1
-        id -= sum_combos(num_stones - i - 1, _N - pos, _N - ret[-1] - 1)
+    while num_stones:
+        pos, id = find_pos(ret[-1], num_stones, id)
         ret.append(pos)
+        num_stones -= 1
     return ret
 
 # convert a list of ones and zeros to a number
