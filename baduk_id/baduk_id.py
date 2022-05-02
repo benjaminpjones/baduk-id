@@ -114,5 +114,3 @@ flying_knife = (
     + [0] * 12 + [0, 1, 2, 1, 1, 0, 0]
     + [0] * 12 + [0, 0, 1, 2, 0, 0, 0]
     + [0] * 19 * 14)
-
-print(decode(encode(flying_knife)))
