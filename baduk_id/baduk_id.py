@@ -54,9 +54,15 @@ def combo_id(intersections):
 
 def find_pos(prev_pos, num_stones, id):
     pos = prev_pos + 1
-    while sum_combos(num_stones - 1, _N - pos - 1, _N - prev_pos - 1) <= id:
+    combo_sum = 0
+    while combo_sum <= id:
+        curr_combo = C(num_stones - 1, _N - pos - 1)
+        if combo_sum + curr_combo > id:
+            break
         pos += 1
-    new_id = id - sum_combos(num_stones - 1, _N - pos, _N - prev_pos - 1)
+        combo_sum += curr_combo
+
+    new_id = id - combo_sum
     return pos, new_id
 
 def decode_cid(num_stones, id):
